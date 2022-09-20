@@ -3,11 +3,17 @@ import styled from "styled-components";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
 
+const BoxArea = styled.div`
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+`;
+
 const Box = styled.div`
   position: relative;
-  margin: 30px auto;
-  width: 30%;
-  padding-top: 56.25%;
+  margin: 0 auto;
+  max-width: 480px;
+  width: 100%;
   background-color: #bef355;
   overflow: hidden;
 
@@ -16,6 +22,7 @@ const Box = styled.div`
   }
 
   & > div {
+    padding-top: 177.778%;
     width: 100% !important;
     height: 100% !important;
   }
@@ -27,45 +34,71 @@ const Box = styled.div`
 
   & video {
     position: absolute;
-    height: auto !important;
-    width: 100% !important;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    height: 100% !important;
+    width: auto !important;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+
+  .btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 2;
   }
 `;
 
 const list = [
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
-  "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
+  "https://vt.tumblr.com/tumblr_o600t8hzf51qcbnq0_480.mp4",
 ];
 
 function App() {
+  const [muted, setmuted] = useState(true);
   return (
     <>
-      {list.map((item, index) => (
-        <Player key={index} url={item} index={index} />
-      ))}
+      <BoxArea>
+        {list.map((item, index) => (
+          <Player
+            key={index}
+            url={item}
+            index={index}
+            muted={muted}
+            setmuted={setmuted}
+          />
+        ))}
+      </BoxArea>
     </>
   );
 }
 
 export default App;
 
-const Player = ({ url, index }: { url: string; index: number }) => {
+const Player = ({
+  url,
+  index,
+  muted,
+  setmuted,
+}: {
+  url: string;
+  index: number;
+  muted: boolean;
+  setmuted: any;
+}) => {
   const [play, setPlay] = useState(false);
-  console.log(`video${index + 1} play : `, play);
+  console.log(muted);
 
   const { ref } = useInView({
     rootMargin: "-50% 0px",
@@ -85,7 +118,10 @@ const Player = ({ url, index }: { url: string; index: number }) => {
 
   return (
     <Box ref={ref}>
-      <ReactPlayer playing={play} url={url} loop muted />
+      <span className="btn">
+        <button onClick={() => setmuted(!muted)}>muted</button>
+      </span>
+      <ReactPlayer playing={play} url={url} loop muted={muted} />
     </Box>
   );
 };
