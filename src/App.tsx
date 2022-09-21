@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ReactPlayer from "react-player";
 import { useInView } from "react-intersection-observer";
+import clsx from "clsx";
 
 const BoxArea = styled.div`
   display: flex;
@@ -46,7 +47,27 @@ const Box = styled.div`
     position: absolute;
     right: 10px;
     top: 10px;
-    z-index: 2;
+    z-index: 3;
+  }
+
+  .dim {
+    z-index: 1;
+  }
+`;
+
+const Dim = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  transition: 0.5s;
+  opacity: 0;
+  z-index: 2;
+
+  &.dim {
+    opacity: 1;
   }
 `;
 
@@ -87,9 +108,9 @@ function App() {
 export default App;
 
 const Player = ({
-  url,
+  url: playerUrl,
   index,
-  muted,
+  muted: playerMuted,
   setmuted,
 }: {
   url: string;
@@ -97,31 +118,62 @@ const Player = ({
   muted: boolean;
   setmuted: any;
 }) => {
-  const [play, setPlay] = useState(false);
-  console.log(muted);
+  const [player, setPlayer] = useState({
+    url: playerUrl,
+    pip: false,
+    playing: false,
+    controls: false,
+    light: false,
+    volume: 0.8,
+    muted: playerMuted,
+    playbackRate: 1.0,
+    loop: true,
+  });
+
+  const { pip, playing, controls, light, volume, playbackRate, loop } = player;
+
+  const videoRef: any = useRef(null);
 
   const { ref } = useInView({
+    // threshold: 1,
     rootMargin: "-50% 0px",
     onChange: (inView) => {
-      setPlay(inView);
+      setPlayer({ ...player, playing: inView });
+      replay();
     },
   });
 
+  const replay = () => {
+    videoRef.current.seekTo(0);
+  };
+
   useEffect(() => {
     if (index === 0) {
-      setPlay(true);
-    }
-    if (index === 1) {
-      setPlay(false);
+      setPlayer({ ...player, playing: true });
     }
   }, [index]);
 
   return (
     <Box ref={ref}>
-      <span className="btn">
-        <button onClick={() => setmuted(!muted)}>muted</button>
+      <span className={clsx("btn")}>
+        <button onClick={() => setmuted(!playerMuted)}>muted</button>
+        <button onClick={() => setPlayer({ ...player, playing: !playing })}>
+          muted
+        </button>
       </span>
-      <ReactPlayer playing={play} url={url} loop muted={muted} />
+      <Dim className={!playing ? "dim" : ""} />
+      <ReactPlayer
+        ref={videoRef}
+        url={playerUrl}
+        pip={pip}
+        playing={playing}
+        controls={controls}
+        light={light}
+        loop={loop}
+        playbackRate={playbackRate}
+        volume={volume}
+        muted={playerMuted}
+      />
     </Box>
   );
 };
