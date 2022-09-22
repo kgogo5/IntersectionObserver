@@ -127,7 +127,7 @@ const Player = ({
     volume: 0.8,
     muted: playerMuted,
     playbackRate: 1.0,
-    loop: true,
+    loop: false,
   });
 
   const { pip, playing, controls, light, volume, playbackRate, loop } = player;
@@ -158,7 +158,7 @@ const Player = ({
       <span className={clsx("btn")}>
         <button onClick={() => setmuted(!playerMuted)}>muted</button>
         <button onClick={() => setPlayer({ ...player, playing: !playing })}>
-          muted
+          play
         </button>
       </span>
       <Dim className={!playing ? "dim" : ""} />
